@@ -965,6 +965,7 @@ create_fast_downward_library(
         pdbs/validation
         pdbs/zero_one_pdbs
         pdbs/zero_one_pdbs_heuristic
+        pdbs/loes
     DEPENDS
         causal_graph
         max_cliques

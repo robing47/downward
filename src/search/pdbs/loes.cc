@@ -44,7 +44,7 @@ int LOES::member_index(const std::vector<bool> &state) {
 }
 
 //Adds a new state to the LOES (Algo 3 to double check). States must be added in ascending order
-void LOES::add_state(const std::vector<bool> &state) {
+void LOES::add_state(const std::vector<bool> &state, int value) {
   int depth;
   if (!has_states) {
     depth = -1;
@@ -67,6 +67,7 @@ void LOES::add_state(const std::vector<bool> &state) {
         treelevels[i].push_back(false);
       }
     }
+	loes_values.push_back(value);
     last_state = state;
     has_states = true;
   }
@@ -93,8 +94,18 @@ void LOES::finalize_LOES() {
 }
 
 //returns the finished_LOES for testing
-  std::vector<bool> LOES::get_loes(){
-    return finished_LOES;}
+std::vector<bool> LOES::get_loes(){
+    //for (bool b: finished_LOES){
+    //std::cout << b<<std::endl;}
+	return finished_LOES;}
+
+int LOES::get_value(const std::vector<bool> &state, int default_value){
+	int id = member_index(state);
+	if (id == -1) {
+		return default_value;}
+	int value = loes_values[id];
+	return value;
+}
 }
 
 

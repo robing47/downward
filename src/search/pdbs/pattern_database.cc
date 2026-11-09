@@ -3,11 +3,13 @@
 #include "../task_utils/task_properties.h"
 #include "../utils/logging.h"
 #include "../utils/math.h"
+#include "loes.h"
 
 #include <cassert>
 #include <iostream>
 #include <limits>
 #include <vector>
+#include <unordered_map>
 
 using namespace std;
 
@@ -50,10 +52,61 @@ int Projection::unrank(int index, int var) const {
     return temp % domain_sizes[var];
 }
 
+std::vector<bool> PatternDatabase::index_to_binary(int index){
+    std::vector<bool> bits;
+    for (int b = num_bits - 1; b >= 0; b--) {
+        bool bit = (index >> b) & 1;
+		bits.push_back(bit);
+    }
+    return bits;
+}
+
+
+//For now ill leave the implementation in the constructor. Later on ill write a own dedicated funtion or class in order to minimize the overhead
 PatternDatabase::PatternDatabase(
     Projection &&projection, vector<int> &&distances)
     : projection(move(projection)), distances(move(distances)) {
+
+    int num_abstract_states = this->projection.get_num_abstract_states();
+
+    //This is used to determine how often each h-value appears in distances
+    std::unordered_map<int, int> count;
+    for (int h : this->distances){
+        if (count.contains(h)){
+        count[h] = count[h] + 1;}
+        else{
+        count[h] = 1;}
+    }
+
+    //Search for the h-value which appears most
+    int mostFrequent = this->distances[0];
+    int max_count = 0;
+    for (auto [h, c]: count){
+        if (max_count < c){
+            max_count = c;
+            mostFrequent = h;}}
+
+	default_value = mostFrequent;
+
+	//find the smallest num_bits with 2^num_bits >= num_abstract_states
+	num_bits = 1;
+	while ((1 << num_bits) < num_abstract_states) {
+    	num_bits++;
+	}
+
+	LOES loes(num_bits);
+
+	for (int i = 0; i < num_abstract_states; i++){
+		//ignore the most occurring entries
+		if (this->distances[i] == mostFrequent){
+			continue;
+		}
+		std::vector<bool> bits = index_to_binary(i);
+		loes.add_state(bits, this->distances[i]);
+	}
+	loes.finalize_LOES();
 }
+
 
 int PatternDatabase::get_value(const vector<int> &state) const {
     return distances[projection.rank(state)];

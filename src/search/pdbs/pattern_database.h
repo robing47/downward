@@ -46,6 +46,9 @@ class PatternDatabase {
       dead-ends are represented by numeric_limits<int>::max()
     */
     std::vector<int> distances;
+    int num_bits;
+	int default_value;
+
 public:
     PatternDatabase(Projection &&projection, std::vector<int> &&distances);
     int get_value(const std::vector<int> &state) const;
@@ -68,6 +71,8 @@ public:
       this method!
     */
     double compute_mean_finite_h() const;
+
+	std::vector<bool> index_to_binary(int index);
 };
 }
 
