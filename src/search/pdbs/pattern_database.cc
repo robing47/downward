@@ -105,6 +105,10 @@ PatternDatabase::PatternDatabase(
 		loes.add_state(bits, this->distances[i]);
 	}
 	loes.finalize_LOES();
+
+    for (int i = 0; i < num_abstract_states; i++) {
+    assert(loes.get_value(index_to_binary(i), default_value) == this->distances[i]);
+}
 }
 
 

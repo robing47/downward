@@ -17,27 +17,23 @@ int main(){
     states2.push_back(false);
     states2.push_back(true);
     states2.push_back(false);
-    loes.add_state(states2, 3);
+    loes.add_state(states2, 1);
 
     std::vector<bool> states3;
+    states3.push_back(true);
     states3.push_back(false);
-    states3.push_back(true);
-    states3.push_back(true);
-    loes.add_state(states3, 6);
-
-    loes.finalize_LOES();
-    loes.get_loes();
-    int value = loes.get_value(states3, 3);
-    std::cout<<"Wert von state3: " << value <<std::endl;
-    int id = loes.member_index(states);
-    std::cout<<"The id: " << id << std::endl;
-
+    states3.push_back(false);
+    loes.add_state(states3, 0);
 
     std::vector<bool> states4;
     states4.push_back(true);
-    states4.push_back(true);
     states4.push_back(false);
-    int value2 = loes.get_value(states4, 4);
-    std::cout<<"The value of state4: " << value2 << std::endl;
+    states4.push_back(true);
+    loes.add_state(states4, 0);
+
+    loes.finalize_LOES();
+    loes.get_loes();
+    std::vector<bool> fake_state;
+    fake_state.push_back(true);
     return 0;
 }

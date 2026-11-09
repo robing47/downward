@@ -95,8 +95,8 @@ void LOES::finalize_LOES() {
 
 //returns the finished_LOES for testing
 std::vector<bool> LOES::get_loes(){
-    //for (bool b: finished_LOES){
-    //std::cout << b<<std::endl;}
+    for (bool b: finished_LOES){
+    std::cout << b<<std::endl;}
 	return finished_LOES;}
 
 int LOES::get_value(const std::vector<bool> &state, int default_value){
