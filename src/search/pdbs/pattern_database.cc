@@ -39,26 +39,32 @@ Projection::Projection(const TaskProxy &task_proxy, const Pattern &pattern)
     }
 }
 
+//takes a real state and calculates the indexnumber for the distances array
 int Projection::rank(const vector<int> &state) const {
     size_t index = 0;
     for (size_t i = 0; i < pattern.size(); ++i) {
-        index += hash_multipliers[i] * state[pattern[i]];
+        index += hash_multipliers[i] * state[pattern[i]]; //->which value does the variable have in the real state
+		//only the pattern variables will be considered
     }
     return index;
 }
 
+//index = which abstract state, var = the position in the pattern
+//returns the abstract state
 int Projection::unrank(int index, int var) const {
     int temp = index / hash_multipliers[var];
     return temp % domain_sizes[var];
 }
 
-std::vector<bool> PatternDatabase::index_to_binary(int index){
-    std::vector<bool> bits;
-    for (int b = num_bits - 1; b >= 0; b--) {
-        bool bit = (index >> b) & 1;
-		bits.push_back(bit);
-    }
-    return bits;
+std::vector<bool> PatternDatabase::index_to_bits(int index){
+	std::vector<bool> bits;
+	int k = projection.get_pattern().size();
+	for(int j = k-1; j >= 0; j--){
+		int value = projection.unrank(index, j);
+		for (int b = needed_bits[j] - 1; b>=0; b--){
+		bool bit = (value >> b) & 1;
+		bits.push_back(bit);}}
+	return bits;
 }
 
 
@@ -87,12 +93,31 @@ PatternDatabase::PatternDatabase(
             mostFrequent = h;}}
 
 	default_value = mostFrequent;
+	int k = this->projection.get_pattern().size();
+	needed_bits.resize(k);
+	num_bits = 0;
 
-	//find the smallest num_bits with 2^num_bits >= num_abstract_states
-	num_bits = 1;
-	while ((1 << num_bits) < num_abstract_states) {
-    	num_bits++;
-	}
+	//For 2 var: mult[1]/mult[0] = d_0
+	//num_abstract_states/mult[1] = d_1
+	for (int i = 0; i < k; i++){
+		int this_mult = this->projection.get_multiplier(i);
+		int next_mult;
+		//there exists a variable after
+		if (i < k - 1){
+			next_mult = this->projection.get_multiplier(i + 1);
+		}else{
+			next_mult = num_abstract_states;}
+		int domain_size = next_mult / this_mult;
+
+		//looking for the smalles b with 2^b >= domain_size
+		int b = 1;
+		//shift bits b bits to the left
+		while ((1 << b) < domain_size){
+		b++;}
+		needed_bits[i] = b;
+		num_bits += b;
+		//std::cout<<"Nummer bits : "<<num_bits<<std::endl;
+		}
 
 	LOES loes(num_bits);
 
@@ -101,13 +126,13 @@ PatternDatabase::PatternDatabase(
 		if (this->distances[i] == mostFrequent){
 			continue;
 		}
-		std::vector<bool> bits = index_to_binary(i);
+		std::vector<bool> bits = index_to_bits(i);
 		loes.add_state(bits, this->distances[i]);
 	}
 	loes.finalize_LOES();
 
     for (int i = 0; i < num_abstract_states; i++) {
-    assert(loes.get_value(index_to_binary(i), default_value) == this->distances[i]);
+    assert(loes.get_value(index_to_bits(i), default_value) == this->distances[i]);
 }
 }
 

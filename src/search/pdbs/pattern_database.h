@@ -36,6 +36,10 @@ public:
     int get_multiplier(int var) const {
         return hash_multipliers[var];
     }
+
+    int get_domain_size(int var) const{
+        return domain_sizes[var];
+    }
 };
 
 class PatternDatabase {
@@ -47,7 +51,8 @@ class PatternDatabase {
     */
     std::vector<int> distances;
     int num_bits;
-	int default_value;
+    int default_value;
+    std::vector<int> needed_bits;
 
 public:
     PatternDatabase(Projection &&projection, std::vector<int> &&distances);
@@ -72,7 +77,9 @@ public:
     */
     double compute_mean_finite_h() const;
 
-	std::vector<bool> index_to_binary(int index);
+    std::vector<bool> index_to_bits(int index);
+
+    std::vector<bool> state_to_bits(std::vector<int> &state);
 };
 }
 
