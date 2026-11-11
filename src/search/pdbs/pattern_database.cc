@@ -56,6 +56,7 @@ int Projection::unrank(int index, int var) const {
     return temp % domain_sizes[var];
 }
 
+//Returns the bitsequence of the abstract state
 std::vector<bool> PatternDatabase::index_to_bits(int index){
 	std::vector<bool> bits;
 	int k = projection.get_pattern().size();
@@ -109,6 +110,9 @@ PatternDatabase::PatternDatabase(
 			next_mult = num_abstract_states;}
 		int domain_size = next_mult / this_mult;
 
+		//std::cout << "Variable " <<  i <<std::endl;
+		//std::cout<< "Domain size: " << domain_size << std::endl;
+
 		//looking for the smalles b with 2^b >= domain_size
 		int b = 1;
 		//shift bits b bits to the left
@@ -133,6 +137,11 @@ PatternDatabase::PatternDatabase(
 
     for (int i = 0; i < num_abstract_states; i++) {
     assert(loes.get_value(index_to_bits(i), default_value) == this->distances[i]);
+
+	//std::cout << "LOES states: "<< num_abstract_states << std::endl;
+	//std::cout << "LOES default value: " << default_value << std::endl;
+	//std::cout << "loes_bits: "<< loes.get_loes().size() << std::endl;
+	//std::cout << "array_bits : " << num_abstract_states << std::endl;
 }
 }
 

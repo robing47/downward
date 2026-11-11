@@ -67,7 +67,7 @@ void LOES::add_state(const std::vector<bool> &state, int value) {
         treelevels[i].push_back(false);
       }
     }
-	loes_values.push_back(value);
+    loes_values.push_back(value);
     last_state = state;
     has_states = true;
   }

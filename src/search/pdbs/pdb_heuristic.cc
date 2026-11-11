@@ -64,6 +64,8 @@ public:
 
         add_option<shared_ptr<TaskIndependentPatternGenerator>>(
             "pattern", "pattern generation method", "greedy()");
+        //TODO
+        add_option<bool>("loes", "t", "false");
         add_heuristic_options_to_feature(*this, "pdb");
 
         document_language_support("action costs", "supported");
@@ -81,6 +83,8 @@ public:
         return components::make_auto_task_independent_component<
             PDBHeuristic, Evaluator>(
             opts.get<shared_ptr<TaskIndependentPatternGenerator>>("pattern"),
+            //TODO
+			opts.get<bool>("loes"),
             get_heuristic_arguments_from_options(opts));
     }
 };
