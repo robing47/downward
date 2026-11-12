@@ -3,13 +3,11 @@
 #include "../task_utils/task_properties.h"
 #include "../utils/logging.h"
 #include "../utils/math.h"
-#include "loes.h"
 
 #include <cassert>
 #include <iostream>
 #include <limits>
 #include <vector>
-#include <unordered_map>
 
 using namespace std;
 
@@ -39,112 +37,23 @@ Projection::Projection(const TaskProxy &task_proxy, const Pattern &pattern)
     }
 }
 
-//takes a real state and calculates the indexnumber for the distances array
 int Projection::rank(const vector<int> &state) const {
     size_t index = 0;
     for (size_t i = 0; i < pattern.size(); ++i) {
-        index += hash_multipliers[i] * state[pattern[i]]; //->which value does the variable have in the real state
-		//only the pattern variables will be considered
+        index += hash_multipliers[i] * state[pattern[i]];
     }
     return index;
 }
 
-//index = which abstract state, var = the position in the pattern
-//returns the abstract state
 int Projection::unrank(int index, int var) const {
     int temp = index / hash_multipliers[var];
     return temp % domain_sizes[var];
 }
 
-//Returns the bitsequence of the abstract state
-std::vector<bool> PatternDatabase::index_to_bits(int index){
-	std::vector<bool> bits;
-	int k = projection.get_pattern().size();
-	for(int j = k-1; j >= 0; j--){
-		int value = projection.unrank(index, j);
-		for (int b = needed_bits[j] - 1; b>=0; b--){
-		bool bit = (value >> b) & 1;
-		bits.push_back(bit);}}
-	return bits;
-}
-
-
-//For now ill leave the implementation in the constructor. Later on ill write a own dedicated funtion or class in order to minimize the overhead
 PatternDatabase::PatternDatabase(
     Projection &&projection, vector<int> &&distances)
     : projection(move(projection)), distances(move(distances)) {
-
-    int num_abstract_states = this->projection.get_num_abstract_states();
-
-    //This is used to determine how often each h-value appears in distances
-    std::unordered_map<int, int> count;
-    for (int h : this->distances){
-        if (count.contains(h)){
-        count[h] = count[h] + 1;}
-        else{
-        count[h] = 1;}
-    }
-
-    //Search for the h-value which appears most
-    int mostFrequent = this->distances[0];
-    int max_count = 0;
-    for (auto [h, c]: count){
-        if (max_count < c){
-            max_count = c;
-            mostFrequent = h;}}
-
-	default_value = mostFrequent;
-	int k = this->projection.get_pattern().size();
-	needed_bits.resize(k);
-	num_bits = 0;
-
-	//For 2 var: mult[1]/mult[0] = d_0
-	//num_abstract_states/mult[1] = d_1
-	for (int i = 0; i < k; i++){
-		int this_mult = this->projection.get_multiplier(i);
-		int next_mult;
-		//there exists a variable after
-		if (i < k - 1){
-			next_mult = this->projection.get_multiplier(i + 1);
-		}else{
-			next_mult = num_abstract_states;}
-		int domain_size = next_mult / this_mult;
-
-		//std::cout << "Variable " <<  i <<std::endl;
-		//std::cout<< "Domain size: " << domain_size << std::endl;
-
-		//looking for the smalles b with 2^b >= domain_size
-		int b = 1;
-		//shift bits b bits to the left
-		while ((1 << b) < domain_size){
-		b++;}
-		needed_bits[i] = b;
-		num_bits += b;
-		//std::cout<<"Nummer bits : "<<num_bits<<std::endl;
-		}
-
-	LOES loes(num_bits);
-
-	for (int i = 0; i < num_abstract_states; i++){
-		//ignore the most occurring entries
-		if (this->distances[i] == mostFrequent){
-			continue;
-		}
-		std::vector<bool> bits = index_to_bits(i);
-		loes.add_state(bits, this->distances[i]);
-	}
-	loes.finalize_LOES();
-
-    for (int i = 0; i < num_abstract_states; i++) {
-    assert(loes.get_value(index_to_bits(i), default_value) == this->distances[i]);
-
-	//std::cout << "LOES states: "<< num_abstract_states << std::endl;
-	//std::cout << "LOES default value: " << default_value << std::endl;
-	//std::cout << "loes_bits: "<< loes.get_loes().size() << std::endl;
-	//std::cout << "array_bits : " << num_abstract_states << std::endl;
 }
-}
-
 
 int PatternDatabase::get_value(const vector<int> &state) const {
     return distances[projection.rank(state)];

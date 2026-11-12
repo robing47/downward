@@ -44,7 +44,9 @@ set_up_build_types("Debug;Release")
 set_up_options()
 
 project(downward LANGUAGES CXX)
-add_executable(downward planner.cc)
+add_executable(downward planner.cc
+        pdbs/loes_pdb.cc
+        pdbs/loes_pdb.h)
 
 # obtain git SHA1 hash
 execute_process(
