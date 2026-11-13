@@ -59,6 +59,13 @@ public:
         return projection.get_pattern();
     }
 
+	const Projection &get_projection() const {
+		return projection;}
+
+	const std::vector<int> &get_distances() const{
+		return distances;}
+
+
     // The size of the PDB is the number of abstract states.
     int get_size() const {
         return projection.get_num_abstract_states();

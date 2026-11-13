@@ -29,6 +29,7 @@ std::vector<bool> LOESPatternDatabase::index_to_bits(int index) const{
         for (int b = needed_bits[j] - 1; b>=0; b--){
             bool bit = (value >> b) & 1;
             bits.push_back(bit);}}
+	//std::cout<<"Bitsequence calculated of abstract states"<<std::endl;
     return bits;
 }
 
@@ -51,6 +52,7 @@ int LOESPatternDatabase::get_default_value(const std::vector<int> &distances) co
             most_frequent = h;
         }
     }
+	//std::cout << "Default value found: " << most_frequent << std::endl;
     return most_frequent;
 }
 
