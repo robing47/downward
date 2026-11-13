@@ -20,15 +20,15 @@ static shared_ptr<PatternDatabase> get_pdb_from_generator(
 
 PDBHeuristic::PDBHeuristic(
     const shared_ptr<AbstractTask> &task,
-    const shared_ptr<PatternGenerator> &pattern, bool cache_estimates,
+    const shared_ptr<PatternGenerator> &pattern, bool use_loes, bool cache_estimates,
     const string &description, utils::Verbosity verbosity)
     : Heuristic(task, cache_estimates, description, verbosity),
-      pdb(get_pdb_from_generator(task, pattern)) {
+      pdb(get_pdb_from_generator(task, pattern)), use_loes(use_loes){
 }
 
 int PDBHeuristic::compute_heuristic(const State &ancestor_state) {
     State state = convert_ancestor_state(ancestor_state);
-    int h = pdb->get_value(state.get_unpacked_values());
+    int h = pdb->get_value(state.get_unpacked_values()); //get_unpacked_values()-> "transforms" the state into a std::vector<int>
     if (h == numeric_limits<int>::max())
         return DEAD_END;
     return h;
@@ -64,8 +64,7 @@ public:
 
         add_option<shared_ptr<TaskIndependentPatternGenerator>>(
             "pattern", "pattern generation method", "greedy()");
-        //TODO
-        //add_option<bool>("loes", "t", "false");
+        add_option<bool>("loes", "store the PDB as loes", "false");
         add_heuristic_options_to_feature(*this, "pdb");
 
         document_language_support("action costs", "supported");
@@ -83,8 +82,7 @@ public:
         return components::make_auto_task_independent_component<
             PDBHeuristic, Evaluator>(
             opts.get<shared_ptr<TaskIndependentPatternGenerator>>("pattern"),
-            //TODO
-			//opts.get<bool>("loes"),
+			opts.get<bool>("loes"),
             get_heuristic_arguments_from_options(opts));
     }
 };

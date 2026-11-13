@@ -11,6 +11,7 @@ class PatternDatabase;
 // Implements a heuristic for a single PDB.
 class PDBHeuristic : public Heuristic {
     std::shared_ptr<PatternDatabase> pdb;
+    bool use_loes;
 protected:
     virtual int compute_heuristic(const State &ancestor_state) override;
 public:
@@ -27,7 +28,7 @@ public:
     PDBHeuristic(
         const std::shared_ptr<AbstractTask> &task,
         const std::shared_ptr<PatternGenerator> &pattern_generator,
-        bool cache_estimates, const std::string &description,
+        bool use_loes, bool cache_estimates, const std::string &description,
         utils::Verbosity verbosity);
 };
 }
