@@ -23,17 +23,17 @@ PDBHeuristic::PDBHeuristic(
     const string &description, utils::Verbosity verbosity)
     : Heuristic(task, cache_estimates, description, verbosity),
       pdb(get_pdb_from_generator(task, pattern)), use_loes(use_loes){
-	if (use_loes == true){
-	loes_pdb = make_shared<LOESPatternDatabase>(Projection(pdb->get_projection()), pdb->get_distances());}
+	if (use_loes){
+	loes_pdb = make_shared<LOESPatternDatabase>(Projection(pdb->get_projection()), pdb->get_distances());
 	pdb.reset(); //free the memory. Only the loes remains
-	log << "using loes"<<std::endl;
+	log << "using loes"<<std::endl;}
 }
 
 int PDBHeuristic::compute_heuristic(const State &ancestor_state) {
     State state = convert_ancestor_state(ancestor_state);
 	const vector<int> &values = state.get_unpacked_values(); //get_unpacked_values()-> "transforms" the state into a std::vector<int>
 	int h;
-	if (use_loes == true){
+	if (use_loes){
 		h = loes_pdb->get_value(values);}
 	else{
 		h = pdb->get_value(values);}
