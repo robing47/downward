@@ -34,6 +34,7 @@ int PDBHeuristic::compute_heuristic(const State &ancestor_state) {
     State state = convert_ancestor_state(ancestor_state);
 	const vector<int> &values = state.get_unpacked_values(); //get_unpacked_values()-> "transforms" the state into a std::vector<int>
 	int h;
+//now it checks if it should use loes_pdb or pdb to get h-value
 	if (use_loes){
 		h = loes_pdb->get_value(values);}
 	else{

@@ -15,7 +15,6 @@ class LOESPatternDatabase {
     LOES loes;
 
     public:
-
     LOESPatternDatabase(Projection &&projection, const std::vector<int> &distances);
 
     std::vector<bool> index_to_bits(int index) const;

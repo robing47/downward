@@ -31,7 +31,6 @@ std::vector<bool> LOESPatternDatabase::index_to_bits(int index) const{
         for (int b = needed_bits[j] - 1; b>=0; b--){
             bool bit = (value >> b) & 1;
             bits.push_back(bit);}}
-	//std::cout<<"Bitsequence calculated of abstract states"<<std::endl;
     return bits;
 }
 
@@ -59,7 +58,7 @@ int LOESPatternDatabase::get_default_value(const std::vector<int> &distances) co
 }
 
 
-//This function finds out how many bits are needed for each pattern variable and sets the members needed_bits and num_bits, which are later needed to build the loes
+//This function finds out how many bits are needed for each pattern variable and returns the needed_bits array
 std::vector<int> LOESPatternDatabase::calculate_bits(const Projection &projection){
 	int k = projection.get_pattern().size();
 	std::vector<int> needed_bits(k);
@@ -100,17 +99,20 @@ void LOESPatternDatabase::build_loes(const std::vector<int> &distances){
     long array_bytes = 4L * num_abstract_states; //Memory for the original pdb. One int is 4 bytes per abstract state in distances array
     long loes_bytes = ((loes.get_finished_loes_size() + 7)/8) + (4L * loes.get_loes_values_size()); //Memory for loes pdb. One bit per entry (rounded up to bytes)
     //plus one int per stored value (states with default value are not stored)
-	*/
+
     utils::g_log << "loes pdb: states = "<<num_abstract_states << " stored =  "<<loes.get_loes_values_size()<< " num_bits = "<<num_bits
     << " array_bytes = " << array_bytes<< " loes_bytes = "<< loes_bytes << std::endl;
-
+	*/
     }
 
 //implemented the same way as index_to_bits. "Translates" the real state into a bit encodng
 std::vector<bool> LOESPatternDatabase::state_to_bits(const std::vector<int> &state) const{
 	std::vector<bool> bits;
 	const Pattern &pattern = projection.get_pattern();
-	for (int i = pattern.size() - 1; i >= 0; i--){
+	int k = pattern.size();
+	for (int i = k - 1; i >= 0; i--){
+		//pattern[i] gives nmr of i-th pattern variable in pattern
+		//state[] gives the value of the i-th pattern variable in the real state
 		int value = state[pattern[i]];
 		for (int b = needed_bits[i] - 1; b >= 0; b--){
 			bool bit = (value >> b) & 1;
