@@ -11,7 +11,7 @@ LOES::LOES(int num_bits) : num_bits(num_bits), treelevels(num_bits), has_states(
 
 //The path_offset function (algo 1) navigates through the LOES and checks if state represents a valid path.
 //It returns the offset if its a valid path and -1 if not
-int LOES::path_offset(const std::vector<bool> &state) {
+int LOES::path_offset(const std::vector<bool> &state) const{
   if (finished_LOES.empty()) {
     return -1;
   }
@@ -33,7 +33,7 @@ int LOES::path_offset(const std::vector<bool> &state) {
   return -1;
 }
 //Returns the id of the given state or -1 if the state's not contained (algo. 2)
-int LOES::member_index(const std::vector<bool> &state) {
+int LOES::member_index(const std::vector<bool> &state) const{
   int o = path_offset(state); //checks if the path to the state exists, if not returns -1
   if (o == -1) {
     return -1;
@@ -74,7 +74,7 @@ void LOES::add_state(const std::vector<bool> &state, int value) {
 
 
 //counts the 1's in the finished LOES from position 0 up to and including the offset
-int LOES::compute_rank(int offset) {
+int LOES::compute_rank(int offset) const{
   int rank = 0;
   for (int i = 0; i <= offset; i++){
     if (finished_LOES[i] == 1) {
@@ -99,7 +99,7 @@ std::vector<bool> LOES::get_loes(){
     std::cout << b<<std::endl;}
 	return finished_LOES;}
 
-int LOES::get_value(const std::vector<bool> &state, int default_value){
+int LOES::get_value(const std::vector<bool> &state, int default_value) const{
 	int id = member_index(state);
 	if (id == -1) {
 		return default_value;}

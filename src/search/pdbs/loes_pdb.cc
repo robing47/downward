@@ -2,6 +2,7 @@
 #include "loes.h"
 #include "pattern_database.h"
 #include "types.h"
+#include "../utils/logging.h"
 
 #include <cassert>
 #include <memory>
@@ -13,12 +14,13 @@ namespace pdbs{
 
 LOESPatternDatabase::LOESPatternDatabase(
 Projection &&projection, const std::vector<int> &distances)
-: projection(std::move(projection)){
-calculate_bits();
-default_value = get_default_value(distances);
+: projection(projection),
+needed_bits(calculate_bits(this->projection)),
+num_bits(sum_bits(needed_bits)),
+default_value(get_default_value(distances)),
+loes(num_bits){
 build_loes(distances);
 }
-
 
 //Returns the bitsequence of the abstract state
 std::vector<bool> LOESPatternDatabase::index_to_bits(int index) const{
@@ -58,10 +60,9 @@ int LOESPatternDatabase::get_default_value(const std::vector<int> &distances) co
 
 
 //This function finds out how many bits are needed for each pattern variable and sets the members needed_bits and num_bits, which are later needed to build the loes
-void LOESPatternDatabase::calculate_bits() {
+std::vector<int> LOESPatternDatabase::calculate_bits(const Projection &projection){
 	int k = projection.get_pattern().size();
-	num_bits = 0;
-	needed_bits.resize(k);
+	std::vector<int> needed_bits(k);
 
 	for(int i = 0; i < k; i++){
 	int b = 1;
@@ -69,24 +70,41 @@ void LOESPatternDatabase::calculate_bits() {
 	while((1<<b) < domain_size){
 	b++;}
 	needed_bits[i] = b;
-	num_bits += b;
-}}
+	}
+	return needed_bits;
+}
+
+int LOESPatternDatabase::sum_bits(const std::vector<int> &needed_bits){
+	int num_bits = 0;
+	for(int b: needed_bits){
+	num_bits += b;}
+	return num_bits;
+}
 
 void LOESPatternDatabase::build_loes(const std::vector<int> &distances){
 	int num_abstract_states = projection.get_num_abstract_states();
-	loes = std::make_unique<LOES>(num_bits);
 
 	for (int i = 0; i < num_abstract_states; i++){
 	if (distances[i] == default_value){
 	continue;
 	}
 	std::vector<bool> bits = index_to_bits(i);
-	loes->add_state(bits, distances[i]);
+	loes.add_state(bits, distances[i]);
 	}
-	loes->finalize_LOES();
+	loes.finalize_LOES();
 	for (int i = 0; i < num_abstract_states; i++) {
-    assert(loes->get_value(index_to_bits(i), default_value) == distances[i]);
-}}
+    assert(loes.get_value(index_to_bits(i), default_value) == distances[i]);
+}
+	/*
+    //This is needed for benchmarking
+    long array_bytes = 4L * num_abstract_states; //Memory for the original pdb. One int is 4 bytes per abstract state in distances array
+    long loes_bytes = ((loes.get_finished_loes_size() + 7)/8) + (4L * loes.get_loes_values_size()); //Memory for loes pdb. One bit per entry (rounded up to bytes)
+    //plus one int per stored value (states with default value are not stored)
+	*/
+    utils::g_log << "loes pdb: states = "<<num_abstract_states << " stored =  "<<loes.get_loes_values_size()<< " num_bits = "<<num_bits
+    << " array_bytes = " << array_bytes<< " loes_bytes = "<< loes_bytes << std::endl;
+
+    }
 
 //implemented the same way as index_to_bits. "Translates" the real state into a bit encodng
 std::vector<bool> LOESPatternDatabase::state_to_bits(const std::vector<int> &state) const{
@@ -100,7 +118,7 @@ std::vector<bool> LOESPatternDatabase::state_to_bits(const std::vector<int> &sta
 		return bits;}
 
 int LOESPatternDatabase::get_value(const std::vector<int> &state) const {
-    return loes->get_value(state_to_bits(state), default_value);
+    return loes.get_value(state_to_bits(state), default_value);
 }}
 
 

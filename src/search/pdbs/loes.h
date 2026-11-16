@@ -12,14 +12,18 @@ class LOES{
   std::vector<int> loes_values;
 
 public:
-  int path_offset(const std::vector<bool> &state);
-  int member_index(const std::vector<bool> &state);
+  int path_offset(const std::vector<bool> &state) const;
+  int member_index(const std::vector<bool> &state) const;
   void add_state(const std::vector<bool> &state, int value);
-  int compute_rank(int offset);
+  int compute_rank(int offset) const;
   void finalize_LOES();
   std::vector<bool> get_loes();
   LOES(int num_bits);
-  int get_value(const std::vector<bool> &state, int default_value);
+  int get_value(const std::vector<bool> &state, int default_value) const;
+
+  //these two getter methods are needed for benchmarking
+  size_t get_finished_loes_size() const{return finished_LOES.size();}
+  size_t get_loes_values_size() const{return loes_values.size();}
 };}
 
 

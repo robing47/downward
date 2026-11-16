@@ -25,8 +25,9 @@ PDBHeuristic::PDBHeuristic(
       pdb(get_pdb_from_generator(task, pattern)), use_loes(use_loes){
 	if (use_loes){
 	loes_pdb = make_shared<LOESPatternDatabase>(Projection(pdb->get_projection()), pdb->get_distances());
-	pdb.reset(); //free the memory. Only the loes remains
-	log << "using loes"<<std::endl;}
+	pdb.reset();
+	//log << "using loes"<<std::endl;
+}
 }
 
 int PDBHeuristic::compute_heuristic(const State &ancestor_state) {

@@ -5,15 +5,14 @@
 #include "pattern_database.h"
 #include "types.h"
 #include <vector>
-#include <memory>
 
 namespace pdbs {
 class LOESPatternDatabase {
     Projection projection;
+	std::vector<int> needed_bits;
     int num_bits;
     int default_value;
-    std::vector<int> needed_bits; //bits per pattern variable
-    std::unique_ptr<LOES> loes;
+    LOES loes;
 
     public:
 
@@ -27,8 +26,9 @@ class LOESPatternDatabase {
 
     void build_loes(const std::vector<int> &distances);
 
-    void calculate_bits();
+    std::vector<int> calculate_bits(const Projection &projection);
 
+	int sum_bits(const std::vector<int> &needed_bits);
 
     const Pattern &get_pattern() const {
         return projection.get_pattern();
