@@ -12,8 +12,7 @@ class LOESPatternDatabase;
 // Implements a heuristic for a single PDB.
 class PDBHeuristic : public Heuristic {
     std::shared_ptr<PatternDatabase> pdb;
-    std::shared_ptr<LOESPatternDatabase> loes_pdb;
-    bool use_loes; //if toggled loes will be used
+
 protected:
     virtual int compute_heuristic(const State &ancestor_state) override;
 public:

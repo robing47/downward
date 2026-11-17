@@ -53,7 +53,9 @@ class PatternDatabase {
 
 public:
     PatternDatabase(Projection &&projection, std::vector<int> &&distances);
-    int get_value(const std::vector<int> &state) const;
+	virtual ~PatternDatabase() = default;
+
+    virtual int get_value(const std::vector<int> &state) const;
 
     const Pattern &get_pattern() const {
         return projection.get_pattern();

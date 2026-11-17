@@ -22,23 +22,18 @@ PDBHeuristic::PDBHeuristic(
     const shared_ptr<PatternGenerator> &pattern, bool use_loes, bool cache_estimates,
     const string &description, utils::Verbosity verbosity)
     : Heuristic(task, cache_estimates, description, verbosity),
-      pdb(get_pdb_from_generator(task, pattern)), use_loes(use_loes){
-	if (use_loes){
-	loes_pdb = make_shared<LOESPatternDatabase>(Projection(pdb->get_projection()), pdb->get_distances());
-	pdb.reset();
-	//log << "using loes"<<std::endl;
+      pdb(get_pdb_from_generator(task, pattern)){
+    //if true replaces the array-based pdb by a loes-based pdb
+    if (use_loes){
+	pdb = make_shared<LOESPatternDatabase>(
+	    Projection(pdb->get_projection()), pdb->get_distances());
+	    log << "using loes"<<std::endl;
 }
 }
 
 int PDBHeuristic::compute_heuristic(const State &ancestor_state) {
     State state = convert_ancestor_state(ancestor_state);
-	const vector<int> &values = state.get_unpacked_values(); //get_unpacked_values()-> "transforms" the state into a std::vector<int>
-	int h;
-//now it checks if it should use loes_pdb or pdb to get h-value
-	if (use_loes){
-		h = loes_pdb->get_value(values);}
-	else{
-		h = pdb->get_value(values);}
+    int h = pdb->get_value(state.get_unpacked_values());
     if (h == numeric_limits<int>::max())
         return DEAD_END;
     return h;
