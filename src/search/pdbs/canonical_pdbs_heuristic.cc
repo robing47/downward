@@ -2,6 +2,7 @@
 
 #include "dominance_pruning.h"
 #include "utils.h"
+#include "loes_pdb.h"
 
 #include "../plugins/plugin.h"
 #include "../utils/logging.h"
@@ -18,7 +19,7 @@ namespace pdbs {
 static CanonicalPDBs get_canonical_pdbs(
     const shared_ptr<AbstractTask> &task,
     const shared_ptr<PatternCollectionGenerator> &pattern_generator,
-    double max_time_dominance_pruning, utils::LogProxy &log) {
+    double max_time_dominance_pruning, bool use_loes, utils::LogProxy &log) {
     utils::Timer timer;
     if (log.is_at_least_normal()) {
         log << "Initializing canonical PDB heuristic..." << endl;
@@ -51,6 +52,14 @@ static CanonicalPDBs get_canonical_pdbs(
             *patterns, *pdbs, *pattern_cliques, num_variables,
             max_time_dominance_pruning, log);
     }
+    //if true, replaces evry array-based PDB by a LOES-based PDB
+    if (use_loes) {
+        log << "using loes for canonical pdbs" << endl;
+        for (shared_ptr<PatternDatabase> &ptr: *pdbs) {
+            ptr = make_shared<LOESPatternDatabase>(
+                Projection(ptr->get_projection()),ptr->get_distances());
+        }
+    }
 
     dump_pattern_collection_generation_statistics(
         "Canonical PDB heuristic", timer(), pattern_collection_info, log);
@@ -64,7 +73,7 @@ CanonicalPDBsHeuristic::CanonicalPDBsHeuristic(
     const string &description, utils::Verbosity verbosity)
     : Heuristic(task, cache_estimates, description, verbosity),
       canonical_pdbs(
-          get_canonical_pdbs(task, patterns, max_time_dominance_pruning, log)) {
+          get_canonical_pdbs(task, patterns, max_time_dominance_pruning, use_loes, log)) {
 }
 
 int CanonicalPDBsHeuristic::compute_heuristic(const State &ancestor_state) {

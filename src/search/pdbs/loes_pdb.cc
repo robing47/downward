@@ -99,7 +99,7 @@ void LOESPatternDatabase::build_loes(const std::vector<int> &distances){
 	/*
     //This is needed for benchmarking
     long array_bytes = 4L * num_abstract_states; //Memory for the original pdb. One int is 4 bytes per abstract state in distances array
-    long loes_bytes = ((loes.get_finished_loes_size() + 7)/8) + (4L * loes.get_loes_values_size()); //Memory for loes pdb. One bit per entry (rounded up to bytes)
+    long loes_bytes = ((loes.get_finished_loes_size() + 7)/8) + (4L * loes.get_loes_values_size()); //Memory for loes pdb, one bit per entry (rounded up to bytes)
     //plus one int per stored value (states with default value are not stored)
 
     utils::g_log << "loes pdb: states = "<<num_abstract_states << " stored =  "<<loes.get_loes_values_size()<< " num_bits = "<<num_bits
