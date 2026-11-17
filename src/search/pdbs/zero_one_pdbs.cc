@@ -3,6 +3,7 @@
 #include "pattern_database.h"
 #include "pattern_database_factory.h"
 #include "utils.h"
+#include "loes_pdb.h"
 
 #include "../task_proxy.h"
 
@@ -17,7 +18,7 @@ using namespace std;
 
 namespace pdbs {
 ZeroOnePDBs::ZeroOnePDBs(
-    const TaskProxy &task_proxy, const PatternCollection &patterns) {
+    const TaskProxy &task_proxy, const PatternCollection &patterns, bool use_loes) {
     vector<int> remaining_operator_costs;
     OperatorsProxy operators = task_proxy.get_operators();
     remaining_operator_costs.reserve(operators.size());
@@ -36,6 +37,10 @@ ZeroOnePDBs::ZeroOnePDBs(
                 remaining_operator_costs[op.get_id()] = 0;
         }
 
+        if (use_loes) {
+            pdb = make_shared<LOESPatternDatabase>(
+                Projection(pdb->get_projection()), pdb->get_distances());
+        }
         pattern_databases.push_back(pdb);
     }
 }

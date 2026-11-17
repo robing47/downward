@@ -10,21 +10,21 @@ using namespace std;
 namespace pdbs {
 static ZeroOnePDBs get_zero_one_pdbs_from_generator(
     const shared_ptr<AbstractTask> &task,
-    const shared_ptr<PatternCollectionGenerator> &pattern_generator) {
+    const shared_ptr<PatternCollectionGenerator> &pattern_generator, bool use_loes) {
     PatternCollectionInformation pattern_collection_info =
         pattern_generator->generate(task);
     shared_ptr<PatternCollection> patterns =
         pattern_collection_info.get_patterns();
     TaskProxy task_proxy(*task);
-    return ZeroOnePDBs(task_proxy, *patterns);
+    return ZeroOnePDBs(task_proxy, *patterns, use_loes);
 }
 
 ZeroOnePDBsHeuristic::ZeroOnePDBsHeuristic(
     const shared_ptr<AbstractTask> &task,
     const shared_ptr<PatternCollectionGenerator> &patterns,
-    bool cache_estimates, const string &description, utils::Verbosity verbosity)
+    bool use_loes, bool cache_estimates, const string &description, utils::Verbosity verbosity)
     : Heuristic(task, cache_estimates, description, verbosity),
-      zero_one_pdbs(get_zero_one_pdbs_from_generator(task, patterns)) {
+      zero_one_pdbs(get_zero_one_pdbs_from_generator(task, patterns, use_loes)) {
 }
 
 int ZeroOnePDBsHeuristic::compute_heuristic(const State &ancestor_state) {
@@ -96,6 +96,7 @@ public:
         add_option<shared_ptr<TaskIndependentPatternCollectionGenerator>>(
             "patterns", "pattern generation method", "systematic(1)");
         add_heuristic_options_to_feature(*this, "zopdbs");
+        add_option<bool>("loes", "store the PDBs as LOES", "false");
 
         document_language_support("action costs", "supported");
         document_language_support("conditional effects", "not supported");
@@ -113,7 +114,8 @@ public:
             ZeroOnePDBsHeuristic, Evaluator>(
             opts.get<shared_ptr<TaskIndependentPatternCollectionGenerator>>(
                 "patterns"),
-            get_heuristic_arguments_from_options(opts));
+                opts.get<bool>("loes"),
+                get_heuristic_arguments_from_options(opts));
     }
 };
 

@@ -17,7 +17,7 @@ public:
     ZeroOnePDBsHeuristic(
         const std::shared_ptr<AbstractTask> &task,
         const std::shared_ptr<PatternCollectionGenerator> &patterns,
-        bool cache_estimates, const std::string &name,
+        bool use_loes, bool cache_estimates, const std::string &name,
         utils::Verbosity verbosity);
 };
 }

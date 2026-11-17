@@ -2,6 +2,7 @@
 #define PDBS_ZERO_ONE_PDBS_H
 
 #include "types.h"
+#include "loes_pdb.h"
 
 class State;
 class TaskProxy;
@@ -14,7 +15,7 @@ namespace pdbs {
 class ZeroOnePDBs {
     PDBCollection pattern_databases;
 public:
-    ZeroOnePDBs(const TaskProxy &task_proxy, const PatternCollection &patterns);
+    ZeroOnePDBs(const TaskProxy &task_proxy, const PatternCollection &patterns, bool use_loes = false);
     ~ZeroOnePDBs() = default;
 
     int get_value(const State &state) const;
