@@ -658,7 +658,7 @@ public:
 
         return components::make_auto_task_independent_component<
             CanonicalPDBsHeuristic, Evaluator>(
-            pgh, opts.get<double>("max_time_dominance_pruning"),
+            pgh, opts.get<double>("max_time_dominance_pruning"), opts.get<bool>("loes"),
             get_heuristic_arguments_from_options(opts));
     }
 };

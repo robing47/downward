@@ -60,7 +60,7 @@ static CanonicalPDBs get_canonical_pdbs(
 CanonicalPDBsHeuristic::CanonicalPDBsHeuristic(
     const shared_ptr<AbstractTask> &task,
     const shared_ptr<PatternCollectionGenerator> &patterns,
-    double max_time_dominance_pruning, bool cache_estimates,
+    double max_time_dominance_pruning, bool use_loes, bool cache_estimates,
     const string &description, utils::Verbosity verbosity)
     : Heuristic(task, cache_estimates, description, verbosity),
       canonical_pdbs(
@@ -85,11 +85,13 @@ void add_canonical_pdbs_options_to_feature(plugins::Feature &feature) {
         "and additive subsets that will never contribute to the heuristic "
         "value because there are dominating subsets in the collection.",
         "infinity", plugins::Bounds("0.0", "infinity"));
+    feature.add_option<bool>("loes", "store the PDBs as LOES", "false");
 }
 
-tuple<double> get_canonical_pdbs_arguments_from_options(
+tuple<double, bool> get_canonical_pdbs_arguments_from_options(
     const plugins::Options &opts) {
-    return make_tuple(opts.get<double>("max_time_dominance_pruning"));
+    return make_tuple(opts.get<double>("max_time_dominance_pruning"),
+            opts.get<bool>("loes"));
 }
 
 class CanonicalPDBsHeuristicFeature
