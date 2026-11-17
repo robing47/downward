@@ -7,9 +7,8 @@
 #include <vector>
 
 namespace pdbs {
-class LOESPatternDatabase {
-    Projection projection;
-	std::vector<int> needed_bits;
+class LOESPatternDatabase : public PatternDatabase {
+    std::vector<int> needed_bits;
     int num_bits;
     int default_value;
     LOES loes;
@@ -29,24 +28,7 @@ class LOESPatternDatabase {
 
 	int sum_bits(const std::vector<int> &needed_bits);
 
-    const Pattern &get_pattern() const {
-        return projection.get_pattern();
-    }
-
-    int get_size() const {
-        return projection.get_num_abstract_states();
-    }
-
     int get_default_value(const std::vector<int> &distances) const;
-
-    int get_multiplier(int var) {
-        return projection.get_multiplier(var);
-    }
-
-    int get_domain_size(int var) const{
-        return projection.get_domain_size(var);
-    }
-
 
 };
 }

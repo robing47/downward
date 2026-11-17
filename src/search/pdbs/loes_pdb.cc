@@ -14,8 +14,8 @@ namespace pdbs{
 
 LOESPatternDatabase::LOESPatternDatabase(
 Projection &&projection, const std::vector<int> &distances)
-: projection(projection),
-needed_bits(calculate_bits(this->projection)),
+: PatternDatabase(std::move(projection), std::vector<int>()),
+needed_bits(calculate_bits(get_projection())),
 num_bits(sum_bits(needed_bits)),
 default_value(get_default_value(distances)),
 loes(num_bits){
@@ -25,9 +25,10 @@ build_loes(distances);
 //Returns the bitsequence of the abstract state
 std::vector<bool> LOESPatternDatabase::index_to_bits(int index) const{
     std::vector<bool> bits;
-    int k = projection.get_pattern().size();
+	const Projection &proj = get_projection();
+    int k = proj.get_pattern().size();
     for(int j = k-1; j >= 0; j--){
-        int value = projection.unrank(index, j);
+        int value = proj.unrank(index, j);
         for (int b = needed_bits[j] - 1; b>=0; b--){
             bool bit = (value >> b) & 1;
             bits.push_back(bit);}}
@@ -81,7 +82,8 @@ int LOESPatternDatabase::sum_bits(const std::vector<int> &needed_bits){
 }
 
 void LOESPatternDatabase::build_loes(const std::vector<int> &distances){
-	int num_abstract_states = projection.get_num_abstract_states();
+	const Projection &proj = get_projection();
+	int num_abstract_states = proj.get_num_abstract_states();
 
 	for (int i = 0; i < num_abstract_states; i++){
 	if (distances[i] == default_value){
@@ -108,7 +110,8 @@ void LOESPatternDatabase::build_loes(const std::vector<int> &distances){
 //implemented the same way as index_to_bits. "Translates" the real state into a bit encodng
 std::vector<bool> LOESPatternDatabase::state_to_bits(const std::vector<int> &state) const{
 	std::vector<bool> bits;
-	const Pattern &pattern = projection.get_pattern();
+	const Projection &proj = get_projection();
+	const Pattern &pattern = proj.get_pattern();
 	int k = pattern.size();
 	for (int i = k - 1; i >= 0; i--){
 		//pattern[i] gives nmr of i-th pattern variable in pattern
