@@ -48,7 +48,7 @@ static CanonicalPDBs get_canonical_pdbs(
             pdb = make_shared<LOESPatternDatabase>(Projection(pdb->get_projection()),pdb->get_distances());
             pdbs->push_back(pdb);
         }
-        //pattern_collection_information.h nomol nochluege
+        //keep pattern collection info consistent with loes pdbs
         pattern_collection_info.set_pdbs(pdbs);
     }else {
         pdbs = pattern_collection_info.get_pdbs();
