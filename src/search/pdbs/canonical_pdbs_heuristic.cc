@@ -1,5 +1,7 @@
 #include "canonical_pdbs_heuristic.h"
 
+#include "pattern_database.h"
+#include "pattern_database_factory.h"
 #include "dominance_pruning.h"
 #include "utils.h"
 #include "loes_pdb.h"
@@ -35,7 +37,22 @@ static CanonicalPDBs get_canonical_pdbs(
     */
 
 //TODO memory efficiency wie zopdbs. Vorgang nach zopdbs
-    shared_ptr<PDBCollection> pdbs = pattern_collection_info.get_pdbs();
+    //shared_ptr<PDBCollection> pdbs = pattern_collection_info.get_pdbs();
+    shared_ptr<PDBCollection> pdbs = make_shared<PDBCollection>();
+    if (use_loes) {
+        log<<"using loes"<<endl;
+        TaskProxy task_proxy = pattern_collection_info.get_task_proxy();
+
+        for (const Pattern &pattern : *patterns) {
+            shared_ptr<PatternDatabase> pdb = compute_pdb(task_proxy, pattern);
+            pdb = make_shared<LOESPatternDatabase>(Projection(pdb->get_projection()),pdb->get_distances());
+            pdbs->push_back(pdb);
+        }
+        //pattern_collection_information.h nomol nochluege
+        pattern_collection_info.set_pdbs(pdbs);
+    }else {
+        pdbs = pattern_collection_info.get_pdbs();
+    }
     shared_ptr<vector<PatternClique>> pattern_cliques =
         pattern_collection_info.get_pattern_cliques();
 
@@ -54,15 +71,6 @@ static CanonicalPDBs get_canonical_pdbs(
             *patterns, *pdbs, *pattern_cliques, num_variables,
             max_time_dominance_pruning, log);
     }
-    //if true, replaces evry array-based PDB by a LOES-based PDB
-    if (use_loes) {
-        log << "using loes for canonical pdbs" << endl;
-        for (shared_ptr<PatternDatabase> &ptr: *pdbs) {
-            ptr = make_shared<LOESPatternDatabase>(
-                Projection(ptr->get_projection()),ptr->get_distances());
-        }
-    }
-
     dump_pattern_collection_generation_statistics(
         "Canonical PDB heuristic", timer(), pattern_collection_info, log);
     return CanonicalPDBs(pdbs, pattern_cliques);
