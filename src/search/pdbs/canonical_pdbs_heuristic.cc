@@ -33,6 +33,8 @@ static CanonicalPDBs get_canonical_pdbs(
       computed before) so that their computation is not taken into account
       for dominance pruning time.
     */
+
+//TODO memory efficiency wie zopdbs. Vorgang nach zopdbs
     shared_ptr<PDBCollection> pdbs = pattern_collection_info.get_pdbs();
     shared_ptr<vector<PatternClique>> pattern_cliques =
         pattern_collection_info.get_pattern_cliques();

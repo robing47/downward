@@ -91,7 +91,7 @@ void LOES::finalize_LOES() {
     //finished_LOES.size() is exactly the position where the next level will start
     finished_LOES.insert(finished_LOES.end(), treelevels[i].begin(), treelevels[i].end()); //concatenates the bit string level by level
   }
-	treelevels.clear();
+    treelevels.clear();
 }
 
 //returns the finished_LOES for testing

@@ -22,8 +22,8 @@ PDBHeuristic::PDBHeuristic(
     const shared_ptr<PatternGenerator> &pattern, bool use_loes, bool cache_estimates,
     const string &description, utils::Verbosity verbosity)
     : Heuristic(task, cache_estimates, description, verbosity),
-      pdb(get_pdb_from_generator(task, pattern)){
-    //if true replaces the array-based pdb by a loes-based pdb
+      pdb(get_pdb_from_generator(task, pattern))
+{//if true replaces the array-based pdb by a loes-based pdb
     if (use_loes){
 	pdb = make_shared<LOESPatternDatabase>(
 	    Projection(pdb->get_projection()), pdb->get_distances());

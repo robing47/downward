@@ -22,8 +22,8 @@ public:
   int get_value(const std::vector<bool> &state, int default_value) const;
 
   //these two getter methods are needed for benchmarking
-  size_t get_finished_loes_size() const{return finished_LOES.size();}
-  size_t get_loes_values_size() const{return loes_values.size();}
+  int get_finished_loes_size() const{return finished_LOES.size();}
+  int get_loes_values_size() const{return loes_values.size();}
 };}
 
 
