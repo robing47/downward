@@ -24,7 +24,7 @@ int LOES::path_offset(const std::vector<bool> &state) const{
       if (depth == num_bits-1) {
         return offset;
       }else {
-        offset = 2 * compute_rank(offset);
+        offset = 2 * simple_rank(offset);
       }
     }else {
       return -1;
@@ -38,8 +38,8 @@ int LOES::member_index(const std::vector<bool> &state) const{
   if (o == -1) {
     return -1;
   }
-  int a = compute_rank(o);
-  int b = compute_rank(level_offsets[num_bits-1] - 1);
+  int a = simple_rank(o);
+  int b = simple_rank(level_offsets[num_bits-1] - 1);
   return a-b-1;
 }
 
@@ -74,7 +74,7 @@ void LOES::add_state(const std::vector<bool> &state, int value) {
 
 
 //counts the 1's in the finished LOES from position 0 up to and including the offset
-int LOES::compute_rank(int offset) const{
+int LOES::simple_rank(int offset) const{
   int rank = 0;
   for (int i = 0; i <= offset; i++){
     if (finished_LOES[i] == 1) {
