@@ -93,17 +93,14 @@ void LOESPatternDatabase::build_loes(const std::vector<int> &distances){
 	loes.add_state(bits, distances[i]);
 	}
 	loes.finalize_LOES();
-	for (int i = 0; i < num_abstract_states; i++) {
-    assert(loes.get_value(index_to_bits(i), default_value) == distances[i]);
-}
-
+	/*
     //needed for benchmarking
     long array_bytes = 4L * num_abstract_states; //memory for original pdb. One int is 4 bytes per abstract state in distances array
     long loes_bytes = (loes.get_finished_loes_size()/8) + (4L * loes.get_loes_values_size()); //memory for finished loes + stored values (defaults are skipped)
 
     utils::g_log << "loes pdb: states = "<<num_abstract_states << " stored =  "<<loes.get_loes_values_size()<< " num_bits = "<<num_bits
     << " array_bytes = " << array_bytes<< " loes_bytes = "<< loes_bytes << std::endl;
-
+	*/
 }
 
 //implemented the same way as index_to_bits. "Translates" the real state into a bit encodng

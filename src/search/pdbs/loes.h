@@ -26,8 +26,9 @@ public:
   	LOES(int num_bits);
   	int get_value(const std::vector<bool> &state, int default_value) const;
 
-	int get_rank_index(){
+	int get_rank_index() const{
 	return (8*block_index.size()) + (2*subblock_index.size());}
+	int compute_rank(int offset) const;
 
   	//these two getter methods are needed for benchmarking
   	int get_finished_loes_size() const{return finished_LOES.size();}
