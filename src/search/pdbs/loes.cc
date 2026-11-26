@@ -45,31 +45,8 @@ int LOES::member_index(const std::vector<bool> &state) const{
 
 //Adds a new state to the LOES (Algo 3 to double check). States must be added in ascending order
 void LOES::add_state(const std::vector<bool> &state, int value) {
-  int depth;
-  if (!has_states) {
-    depth = -1;
-  } else{
-  if (last_state == state) {
-    return;
-  }
-    depth = 0;
-    while (state[depth] == last_state[depth]) {
-      ++depth;
-    }
-    treelevels[depth].back() = true;
-  }
-    for (int i = depth + 1; i <= num_bits - 1; i++) {
-      if (state[i]) {
-        treelevels[i].push_back(false);
-        treelevels[i].push_back(true);
-      }else {
-        treelevels[i].push_back(true);
-        treelevels[i].push_back(false);
-      }
-    }
-    loes_values.push_back(value);
-    last_state = state;
-    has_states = true;
+  add_state(state);
+  loes_values.push_back(value);
   }
 
 
@@ -113,29 +90,22 @@ int LOES::get_value(const std::vector<bool> &state, int default_value) const{
 //the finished loes and marks at certain positions how many 1 were counted up till that point.
 //the loes will be split into blocks. each block consists of 128 subblocks(a subblock is 512 bits)
 void LOES::rank_index() {
-    //clear the tables (if the function has been called before)
     block_index.clear();
     subblock_index.clear();
 
-    //blocksizes from the paper
-    const int bits_per_block = 1<<16; //2^16
+    const int bits_per_block = 1<<16;
     const int bits_per_subblock = 512;
 
-    //counter for every 1 from position 0 till the actual position
     uint64_t total = 0;
-    //remembers how big total in the beginning of the block was
     uint64_t start_block = 0;
 
-    //loops through every bit of the loes
     for (int i = 0; i < finished_LOES.size(); i++) {
-        //new block starts. remember how many 1 bits lie before it
         if (i % bits_per_block == 0) {
-            block_index.push_back(total); //save in vlock_index how many 1's were before
+            block_index.push_back(total);
             start_block = total;
         }
-        //new subblock starts. remember how many 1 bits lie before it (counted from the start of its block)
         if (i % bits_per_subblock == 0) {
-            uint16_t difference = total - start_block; //the ones since the start of the new block
+            uint16_t difference = total - start_block;
             subblock_index.push_back(difference);
         }
         if (finished_LOES[i]) {
@@ -154,24 +124,52 @@ int LOES::compute_rank(int offset) const {
     const int bits_per_block = 1 << 16;
     const int bits_per_subblock = 512;
 
-    int pos = offset;
-    int nr_subblock = pos / bits_per_subblock; //determine in which subblock pos is
-    int nr_block = pos/bits_per_block; //determine in which block pos is
+    int nr_subblock = offset/bits_per_subblock;
+    int nr_block = offset/bits_per_block;
 
-    //rank = 1's before the big block + 1's from the blockbeginning until the subblockbeginning
     uint64_t rank = block_index[nr_block] + subblock_index[nr_subblock];
-
-    //the first position of the subblock from where we count
     int start_loop = nr_subblock * bits_per_subblock;
 
     for (int i = start_loop; i <= offset; i++) {
-        //now we only count the 1's from the beginning until/with offset
         if (finished_LOES[i]) {
             rank++;
         }
     }
     return rank;
 }
+
+bool LOES::contains_state(const std::vector<bool> &state) const {
+	bool result = path_offset(state);
+	return result != -1;
+}
+
+//adds a new state to the loes (algo 3). states must be added in ascending order
+void LOES::add_state(const std::vector<bool> &state){
+  int depth;
+  if (!has_states) {
+    depth = -1;
+  } else{
+  if (last_state == state) {
+    return;
+  }
+    depth = 0;
+    while (state[depth] == last_state[depth]) {
+      ++depth;
+    }
+    treelevels[depth].back() = true;
+  }
+    for (int i = depth + 1; i <= num_bits - 1; i++) {
+      if (state[i]) {
+        treelevels[i].push_back(false);
+        treelevels[i].push_back(true);
+      }else {
+        treelevels[i].push_back(true);
+        treelevels[i].push_back(false);
+      }
+    }
+    last_state = state;
+    has_states = true;
+  }
 
 }
 

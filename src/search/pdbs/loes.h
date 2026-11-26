@@ -8,23 +8,26 @@ class LOES{
   	int num_bits;   //length of the bit sequence
   	std::vector<std::vector<bool>> treelevels; //bits per level
   	std::vector<bool> last_state; //the last added state
-  	std::vector<bool> finished_LOES;
+  	std::vector<bool> finished_LOES; //the finished loes bit sequence
   	std::vector<int> level_offsets;  //startposition of every level
   	bool has_states; //check if there are states
-  	std::vector<int> loes_values;
-  	std::vector<uint64_t> block_index;
-  	std::vector<uint16_t> subblock_index;
+  	std::vector<int> loes_values; //stores the values of the loes
+  	std::vector<uint64_t> block_index;	//counts how many 1's lie before block[i]
+  	std::vector<uint16_t> subblock_index; //counts how many 1's lie from the beginning of the block until subblock[i]
   	void rank_index();
 
 public:
   	int path_offset(const std::vector<bool> &state) const;
   	int member_index(const std::vector<bool> &state) const;
+	//for inverse relation
+	void add_state(const std::vector<bool> &state);
   	void add_state(const std::vector<bool> &state, int value);
   	int simple_rank(int offset) const;
   	void finalize_LOES();
   	std::vector<bool> get_loes();
   	LOES(int num_bits);
   	int get_value(const std::vector<bool> &state, int default_value) const;
+	bool contains_state(const std::vector<bool> &state) const;
 
 	int get_rank_index() const{
 	return (8*block_index.size()) + (2*subblock_index.size());}
