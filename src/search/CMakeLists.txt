@@ -46,7 +46,9 @@ set_up_options()
 project(downward LANGUAGES CXX)
 add_executable(downward planner.cc
         pdbs/loes_pdb.cc
-        pdbs/loes_pdb.h)
+        pdbs/loes_pdb.h
+        pdbs/loes_pdb_ir.cpp
+        pdbs/loes_pdb_ir.h)
 
 # obtain git SHA1 hash
 execute_process(
