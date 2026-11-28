@@ -3,6 +3,7 @@
 #include "../plugins/plugin.h"
 #include "../utils/markup.h"
 #include "loes_pdb.h"
+#include "loes_pdb_ir.h"
 
 #include <limits>
 #include <memory>
@@ -19,16 +20,21 @@ static shared_ptr<PatternDatabase> get_pdb_from_generator(
 
 PDBHeuristic::PDBHeuristic(
     const shared_ptr<AbstractTask> &task,
-    const shared_ptr<PatternGenerator> &pattern, bool use_loes, bool cache_estimates,
+    const shared_ptr<PatternGenerator> &pattern, bool use_loes, bool use_inverse_relation, bool cache_estimates,
     const string &description, utils::Verbosity verbosity)
     : Heuristic(task, cache_estimates, description, verbosity),
       pdb(get_pdb_from_generator(task, pattern))
-{//if true replaces the array-based pdb by a loes-based pdb
-    if (use_loes){
-	pdb = make_shared<LOESPatternDatabase>(
-	    Projection(pdb->get_projection()), pdb->get_distances());
-	    log << "using loes"<<std::endl;
-}
+{
+//TODO use enums instead of bools
+    if (use_inverse_relation) {
+        pdb = make_shared<IRLOESPatternDatabase>(
+            Projection(pdb->get_projection()), pdb->get_distances());
+        log << "using inverse relation loes" << endl;
+    } else if (use_loes) {
+        pdb = make_shared<LOESPatternDatabase>(
+            Projection(pdb->get_projection()), pdb->get_distances());
+        log << "using loes" << endl;
+    }
 }
 
 int PDBHeuristic::compute_heuristic(const State &ancestor_state) {
@@ -70,6 +76,7 @@ public:
         add_option<shared_ptr<TaskIndependentPatternGenerator>>(
             "pattern", "pattern generation method", "greedy()");
         add_option<bool>("loes", "store the PDB as loes", "false");
+		add_option<bool>("inverse_relation", "store the PDB as loes (inverse relation variant)", "false");
         add_heuristic_options_to_feature(*this, "pdb");
 
         document_language_support("action costs", "supported");
@@ -88,6 +95,7 @@ public:
             PDBHeuristic, Evaluator>(
             opts.get<shared_ptr<TaskIndependentPatternGenerator>>("pattern"),
 			opts.get<bool>("loes"),
+			opts.get<bool>("inverse_relation"),
             get_heuristic_arguments_from_options(opts));
     }
 };

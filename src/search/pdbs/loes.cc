@@ -139,7 +139,7 @@ int LOES::compute_rank(int offset) const {
 }
 
 bool LOES::contains_state(const std::vector<bool> &state) const {
-	bool result = path_offset(state);
+	int result = path_offset(state);
 	return result != -1;
 }
 

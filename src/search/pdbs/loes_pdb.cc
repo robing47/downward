@@ -36,7 +36,7 @@ std::vector<bool> LOESPatternDatabase::index_to_bits(int index) const{
 }
 
 //This function counts how often an h-value appears in the distances array and returns the default value
-int LOESPatternDatabase::get_default_value(const std::vector<int> &distances) const{
+int get_default_value(const std::vector<int> &distances){
     std::unordered_map<int, int> count;
     for (int h : distances){
         if (count.contains(h)){
@@ -54,13 +54,13 @@ int LOESPatternDatabase::get_default_value(const std::vector<int> &distances) co
             most_frequent = h;
         }
     }
-	//std::cout << "Default value found: " << most_frequent << std::endl;
+	//std::cout << "Default value: " << most_frequent << std::endl;
     return most_frequent;
 }
 
 
 //This function finds out how many bits are needed for each pattern variable and returns the needed_bits array
-std::vector<int> LOESPatternDatabase::calculate_bits(const Projection &projection){
+std::vector<int> calculate_bits(const Projection &projection){
 	int k = projection.get_pattern().size();
 	std::vector<int> needed_bits(k);
 
@@ -74,7 +74,7 @@ std::vector<int> LOESPatternDatabase::calculate_bits(const Projection &projectio
 	return needed_bits;
 }
 
-int LOESPatternDatabase::sum_bits(const std::vector<int> &needed_bits){
+int sum_bits(const std::vector<int> &needed_bits){
 	int num_bits = 0;
 	for(int b: needed_bits){
 	num_bits += b;}

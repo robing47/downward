@@ -29,7 +29,7 @@ public:
     PDBHeuristic(
         const std::shared_ptr<AbstractTask> &task,
         const std::shared_ptr<PatternGenerator> &pattern_generator,
-        bool use_loes, bool cache_estimates, const std::string &description,
+        bool use_loes, bool use_inverse_relation, bool cache_estimates, const std::string &description,
         utils::Verbosity verbosity);
 };
 }

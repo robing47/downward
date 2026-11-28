@@ -15,22 +15,15 @@ class LOESPatternDatabase : public PatternDatabase {
 
     public:
     LOESPatternDatabase(Projection &&projection, const std::vector<int> &distances);
-
     std::vector<bool> index_to_bits(int index) const;
-
     std::vector<bool> state_to_bits(const std::vector<int> &state) const;
-
     int get_value(const std::vector<int> &state) const override;
-
     void build_loes(const std::vector<int> &distances);
 
-    std::vector<int> calculate_bits(const Projection &projection);
-
-    int sum_bits(const std::vector<int> &needed_bits);
-
-    int get_default_value(const std::vector<int> &distances) const;
-
 };
+    std::vector<int> calculate_bits(const Projection &projection);
+    int sum_bits(const std::vector<int> &needed_bits);
+    int get_default_value(const std::vector<int> &distances);
 }
 
 #endif // DOWNWARD_LOES_PDB_H
